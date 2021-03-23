@@ -1,6 +1,7 @@
 import sys, os
 import cv2
 import numpy as np
+import random
 from PIL import Image
 
 def detecte_visages(image):
@@ -43,19 +44,24 @@ def superpose(img, img_overlay, x, y, alpha_mask):
     img_crop[:] = alpha * img_overlay_crop + alpha_inv * img_crop
 
 
+def getRandomColor():
+    listeColor = ['black','blue','brown','cyan','green','pink','red','white','yellow']
+    return listeColor[random.randint(0, 8)]
+
 def putTheHat(image):
+    color = getRandomColor()
     visage = detecte_visages(image)
     largeur = (visage[1][0]-visage[0][0])
     if largeur > 275:
-        chapeau="chapeau/casquette_275.png"
+        chapeau="chapeau/casquette_"+color+"_275.png"
     elif largeur > 225:
-        chapeau="chapeau/casquette_225.png" 
+        chapeau="chapeau/casquette_"+color+"_225.png" 
     elif largeur > 175:
-        chapeau="chapeau/casquette_175.png"       
+        chapeau="chapeau/casquette_"+color+"_175.png"       
     elif largeur > 125:
-        chapeau="chapeau/casquette_125.png"   
+        chapeau="chapeau/casquette_"+color+"_125.png"   
     else :
-        chapeau="chapeau/casquette_75.png"     
+        chapeau="chapeau/casquette_"+color+"_75.png"     
         
     hauteur = visage[2]
     img_overlay_rgba = np.array(Image.open(chapeau)) 
