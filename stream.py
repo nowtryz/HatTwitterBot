@@ -1,5 +1,8 @@
+import os
+
 from tweepy import StreamListener, Status, API, User, TweepError
 from pprint import PrettyPrinter
+from image_processor import generate_from_url
 import logging
 import re
 
@@ -29,13 +32,16 @@ class MentionStreamer(StreamListener):
         """Called when a new status arrives. AKA where the magic happen"""
         mentions = [user['screen_name'] for user in status.entities['user_mentions']]
         if self.me.screen_name in mentions:
+            result = None
             try:
                 logger.info("Received a tweet, processing")
-                # pic = picture_pattern.sub(r'\1\2', status.author.profile_image_url_https)
+                pic = picture_pattern.sub(r'\1\2', status.author.profile_image_url_https)
+                result = generate_from_url(pic)
                 self.api.update_with_media(
-                    filename='humain1.jpg',
+                    filename=result,
                     status='Hey @%s! Here is a beautiful picture 4U 🥰' % status.user.screen_name,
                     in_reply_to_status_id=status.id)
+                logger.info("Replied with love to %s" % status.user.screen_name)
             except TweepError:
                 logger.exception("An exception occurred during tweet processing")
         else:
