@@ -1,7 +1,4 @@
-import os
-
 from tweepy import StreamListener, Status, API, User, TweepError
-from pprint import PrettyPrinter
 
 from urllib3.exceptions import ProtocolError
 
@@ -10,7 +7,6 @@ import logging
 import re
 
 logger = logging.getLogger(__name__)
-pp = PrettyPrinter(indent=4)
 picture_pattern = re.compile(r'(.*)_normal(.*)', re.IGNORECASE)
 
 class MentionStreamer(StreamListener):
