@@ -14,10 +14,9 @@ me = api.me()
 logger.info("Logged as %s (@%s)" % (me.name, me.screen_name))
 
 # Booting listener
-mention = '@' + me.screen_name
 listener = MentionStreamer(api, me)
 stream = tweepy.Stream(auth=api.auth, listener=listener)
-logger.info("Streaming API, filtering track for %s..." % mention)
-stream.filter(track=[mention])
+logger.info("Streaming API, filtering track for @%s..." % me.screen_name)
+stream.filter(track=[me.screen_name], is_async=True, stall_warnings=True)
 
 

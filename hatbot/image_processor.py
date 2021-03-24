@@ -9,11 +9,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+class ProcessingError(Exception):
+    pass
+
+
 def detecte_visages(image):
     # on charge l'image en mémoire
     img = cv2.imread(image)
     # on charge le modèle de détection des visages
-    face_model = cv2.CascadeClassifier("haarcascade_frontalface_alt2.xml")
+    face_model = cv2.CascadeClassifier("../haarcascade_frontalface_alt2.xml")
 
     # détection du ou des visages
     faces = face_model.detectMultiScale(img)
@@ -60,18 +65,18 @@ def putTheHat(image):
     try:
         largeur = (visage[1][0] - visage[0][0])
     except TypeError:
-        print("Oops! It seems like there is no one on your picture :/")
-        return 0
+        logger.exception("Oops! It seems like there is no one on your picture :/")
+        raise ProcessingError()
     if largeur > 275:
-        chapeau = "chapeau/casquette_" + color + "_275.png"
+        chapeau = "../chapeau/casquette_" + color + "_275.png"
     elif largeur > 225:
-        chapeau = "chapeau/casquette_" + color + "_225.png"
+        chapeau = "../chapeau/casquette_" + color + "_225.png"
     elif largeur > 175:
-        chapeau = "chapeau/casquette_" + color + "_175.png"
+        chapeau = "../chapeau/casquette_" + color + "_175.png"
     elif largeur > 125:
-        chapeau = "chapeau/casquette_" + color + "_125.png"
+        chapeau = "../chapeau/casquette_" + color + "_125.png"
     else:
-        chapeau = "chapeau/casquette_" + color + "_75.png"
+        chapeau = "../chapeau/casquette_" + color + "_75.png"
 
     hauteur = visage[2]
     img_overlay_rgba = np.array(Image.open(chapeau))

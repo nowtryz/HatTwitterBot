@@ -2,7 +2,10 @@ import os
 
 from tweepy import StreamListener, Status, API, User, TweepError
 from pprint import PrettyPrinter
-from image_processor import generate_from_url
+
+from urllib3.exceptions import ProtocolError
+
+from image_processor import generate_from_url, ProcessingError
 import logging
 import re
 
@@ -36,13 +39,19 @@ class MentionStreamer(StreamListener):
             try:
                 logger.info("Received a tweet, processing")
                 pic = picture_pattern.sub(r'\1\2', status.author.profile_image_url_https)
-                result = generate_from_url(pic)
-                self.api.update_with_media(
-                    filename=result,
-                    status='Hey @%s! Here is a beautiful picture 4U 🥰' % status.user.screen_name,
-                    in_reply_to_status_id=status.id)
-                logger.info("Replied with love to %s" % status.user.screen_name)
-            except TweepError:
+                try:
+                    result = generate_from_url(pic)
+                    self.api.update_with_media(
+                        filename=result,
+                        status='Hey @%s! Here is a beautiful picture 4U 🥰' % status.user.screen_name,
+                        in_reply_to_status_id=status.id)
+                    logger.info("Replied with love to %s" % status.user.screen_name)
+                except ProcessingError:
+                    logger.error("Unable to create an hat for %s" % status.user.screen_name)
+                    self.api.update_status('Hey @%s! We\'re sorry, but there seems not to be any face on your profile '
+                                           'picture 😥' % status.user.screen_name,
+                                           in_reply_to_status_id=status.id)
+            except (TweepError, ProtocolError):
                 logger.exception("An exception occurred during tweet processing")
         else:
             logger.info("Got a tweet but we weren't mentioned")
