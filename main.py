@@ -3,7 +3,9 @@ import cv2
 import numpy as np
 import random
 from PIL import Image
-from urllib.request import urlopen
+import urllib.request
+
+
 
 def detecte_visages(image):
     # on charge l'image en mémoire
@@ -83,9 +85,10 @@ def putTheHat(image):
     Image.fromarray(img_result).save(image[:-4]+"WithHat.jpg") #image à tweeter
     print("The hat has been put :)")
 
-    
-im = Image.open(urlopen("https://images-ext-2.discordapp.net/external/59hjlnXp6QIET28AeRwAIm_0yM5EwU8XBqcp1szp7-E/https/pbs.twimg.com/profile_images/1374524788618653696/LL1B4q0u.jpg"))
-putTheHat(im)
+opener = urllib.request.URLopener()
+opener.addheader('User-Agent', 'whatever')
+filename, headers = opener.retrieve(sys.argv[1], 'temp.jpg')
+putTheHat('temp.jpg')
 
 
 
