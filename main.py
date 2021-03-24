@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import random
 from PIL import Image
+from urllib.request import urlopen
 
 def detecte_visages(image):
     # on charge l'image en mémoire
@@ -51,7 +52,11 @@ def getRandomColor():
 def putTheHat(image):
     color = getRandomColor()
     visage = detecte_visages(image)
-    largeur = (visage[1][0]-visage[0][0])
+    try:
+        largeur = (visage[1][0]-visage[0][0])
+    except TypeError:
+        print("Oops! It seems like there is no one on your picture :/")
+        return 0
     if largeur > 275:
         chapeau="chapeau/casquette_"+color+"_275.png"
     elif largeur > 225:
@@ -68,6 +73,7 @@ def putTheHat(image):
     x, y = visage[0][0]+(int)(largeur/2) - (int)(img_overlay_rgba.shape[1]/2), visage[0][1]- (int)(img_overlay_rgba.shape[0]) + int(hauteur/10)
     
     # Perform blending
+    img = np.array(Image.open(image))
     alpha_mask = img_overlay_rgba[:, :, 3] / 255.0
     img_result = img[:, :, :3].copy()
     img_overlay = img_overlay_rgba[:, :, :3]
@@ -77,7 +83,9 @@ def putTheHat(image):
     Image.fromarray(img_result).save(image[:-4]+"WithHat.jpg") #image à tweeter
     print("The hat has been put :)")
 
-putTheHat("oui.png")
+    
+im = Image.open(urlopen("https://images-ext-2.discordapp.net/external/59hjlnXp6QIET28AeRwAIm_0yM5EwU8XBqcp1szp7-E/https/pbs.twimg.com/profile_images/1374524788618653696/LL1B4q0u.jpg"))
+putTheHat(im)
 
 
 
